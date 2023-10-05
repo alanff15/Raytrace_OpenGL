@@ -7,6 +7,10 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/VertexBufferLayout.h"
 
+#ifndef M_PI
+#define M_PI ((float)3.14159265358979323846)
+#endif
+
 namespace App {
 
 Renderer renderer;
@@ -14,6 +18,8 @@ std::unique_ptr<VertexBuffer> vb;
 std::unique_ptr<VertexArray> vao;
 std::unique_ptr<IndexBuffer> ib;
 std::unique_ptr<Shader> shader;
+
+float angles[3] = {30.0f * M_PI / 180.0f, 0, 0};
 
 void Setup() {
   // blend
@@ -35,15 +41,18 @@ void Setup() {
 }
 
 void Render() {
+  shader->Bind();
+  shader->SetUniform3f("u_DirectorAngles", angles[0], angles[1], angles[2]);
   renderer.Draw(*vao, *ib, *shader);
 }
 
 void RenderInterface() {
-  ImGui::Begin("Minha janelinha");
-  ImGui::Text("Área de trabalho");
-  if (ImGui::Button("Ativar")) {
-    std::cout << "Botão de teste" << std::endl;
-  }
+  ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x - 60, ImGui::GetWindowPos().y - 60), ImGuiCond_::ImGuiCond_None);
+  ImGui::SetNextWindowSize(ImVec2(420, 80), ImGuiCond_::ImGuiCond_None);
+  ImGui::SetNextWindowBgAlpha(0.25f);
+  ImGui::Begin("Câmera");
+  ImGui::SliderFloat("Ângulo X", &angles[0], -M_PI / 2, M_PI / 2);
+  ImGui::SliderFloat("Ângulo Z", &angles[2], -M_PI, M_PI);
   ImGui::End();
 }
 
