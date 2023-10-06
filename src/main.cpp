@@ -21,7 +21,7 @@ int main(void) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   /* Create a windowed mode window and its OpenGL context */
-  window = glfwCreateWindow(800, 600, "", NULL, NULL);
+  window = glfwCreateWindow(800, 600, "App", NULL, NULL);
   if (!window) {
     glfwTerminate();
     return -1;
@@ -63,11 +63,14 @@ int main(void) {
 
   App::Setup();
 
+  glfwSetMouseButtonCallback(window, App::mouseButtonEvent);
+  glfwSetCursorPosCallback(window, App::cursorPosEvent);
+
   while (!glfwWindowShouldClose(window)) {
     GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     renderer.Clear();
 
-    App::Render();
+    App::Render(window);
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();

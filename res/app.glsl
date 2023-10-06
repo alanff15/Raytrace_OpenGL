@@ -17,6 +17,8 @@ void main() {
 layout(location = 0) out vec4 color;
 in vec2 FragCoord;
 
+uniform float u_FOV;
+uniform vec2 u_ScreenResolution;
 uniform vec3 u_DirectorAngles;
 
 #define MAX_STEPS 128
@@ -24,13 +26,11 @@ uniform vec3 u_DirectorAngles;
 #define EPSILON 0.01f
 
 // camera
-float FOV = 1.0;                    // abertura
-float ang_X = u_DirectorAngles.x;   //30.0 * 3.14159 / 180.0;  // angulo diretor X
-float ang_Y = u_DirectorAngles.y;   //0.0 * 3.14159 / 180.0;   // angulo diretor Y
-float ang_Z = u_DirectorAngles.z;   //15.0 * 3.14159 / 180.0;  // angulo diretor Z
-float offsetx = 0.0;                // deslocamento da câmera em X
-float offsety = 0.0;                // deslocamento da câmera em Y
-float zoom = 1.0;                   // aproximacao
+float FOV = u_FOV;              // abertura
+vec3 ang = u_DirectorAngles;    //angulos diretores
+float offsetx = 0.0;            // deslocamento da câmera em X
+float offsety = 0.0;            // deslocamento da câmera em Y
+float zoom = 1.0;               // aproximacao
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -172,7 +172,7 @@ vec3 renderPixel(vec2 pixPos, vec2 imgSize) {
     vec3 camera_y = vec3(0.0, 0.0, -1.0);
     vec3 camera_z = vec3(0.0, 1.0, 0.0);
     // rotação da câmera
-    mat3 matRot = rotationMatrixZ(ang_Z) * rotationMatrixX(ang_X) * rotationMatrixY(ang_Y);
+    mat3 matRot = rotationMatrixZ(ang.z) * rotationMatrixX(ang.x) * rotationMatrixY(ang.y);
     camera_pos = matRot * camera_pos;
     camera_x = matRot * camera_x;
     camera_y = matRot * camera_y;
@@ -205,5 +205,5 @@ vec3 renderPixel(vec2 pixPos, vec2 imgSize) {
 }
 
 void main() {
-    color = vec4(renderPixel(vec2(FragCoord.x, FragCoord.y), vec2(800, 600)), 1.0);
+    color = vec4(renderPixel(vec2(FragCoord.x, FragCoord.y), vec2(u_ScreenResolution.x, u_ScreenResolution.y)), 1.0);
 }
