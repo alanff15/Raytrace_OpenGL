@@ -204,6 +204,17 @@ vec3 renderPixel(vec2 pixPos, vec2 imgSize) {
     return clamp(rgb, vec3(0.0), vec3(1.0));
 }
 
+vec2 SSAA[4] = vec2[4](//
+vec2(-1.0 / 4.0, 3.0 / 4.0) / u_ScreenResolution,   // subpixel 0
+vec2(3.0 / 4.0, 1.0 / 3.0) / u_ScreenResolution,    // subpixel 1
+vec2(-3.0 / 4.0, -1.0 / 4.0) / u_ScreenResolution,  // subpixel 2
+vec2(1.0 / 4.0, -3.0 / 4.0) / u_ScreenResolution    // subpixel 3
+);
+
 void main() {
-    color = vec4(renderPixel(vec2(FragCoord.x, FragCoord.y), vec2(u_ScreenResolution.x, u_ScreenResolution.y)), 1.0);
+    color = vec4(0.0);
+    for(int i = 0; i < 4; i++) {
+        color += vec4(renderPixel(SSAA[i] + FragCoord, u_ScreenResolution), 1.0);
+    }
+    color /= 4.0;
 }
