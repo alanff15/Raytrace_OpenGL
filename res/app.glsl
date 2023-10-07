@@ -23,7 +23,7 @@ uniform vec3 u_DirectorAngles;
 
 #define MAX_STEPS 128
 #define MAX_DIST 500.0f
-#define EPSILON 0.01f
+#define EPSILON 1.0e-2
 
 // camera
 float FOV = u_FOV;              // abertura
@@ -129,9 +129,9 @@ vec3 getMaterial(vec3 p, float id) {
 }
 
 vec3 getNormal(vec3 p) {
-    vec3 lx = vec3(2 * EPSILON, 0.0, 0.0);
-    vec3 ly = vec3(0.0, 2 * EPSILON, 0.0);
-    vec3 lz = vec3(0.0, 0.0, 2 * EPSILON);
+    vec3 lx = vec3(EPSILON, 0.0, 0.0);
+    vec3 ly = vec3(0.0, EPSILON, 0.0);
+    vec3 lz = vec3(0.0, 0.0, EPSILON);
     vec3 n = vec3(map(p).x) - vec3(map(p - lx).x, map(p - ly).x, map(p - lz).x);
     return normalize(n);
 }
@@ -204,6 +204,17 @@ vec3 renderPixel(vec2 pixPos, vec2 imgSize) {
     return clamp(rgb, vec3(0.0), vec3(1.0));
 }
 
+vec2 SSAA[4] = vec2[4](//
+vec2(-1.0, 3.0) / (4.0 * u_ScreenResolution),       // subpixel 0
+vec2(3.0, 1.0 / 3.0) / (4.0 * u_ScreenResolution),  // subpixel 1
+vec2(-3.0, -1.0) / (4.0 * u_ScreenResolution),      // subpixel 2
+vec2(1.0, -3.0) / (4.0 * u_ScreenResolution)        // subpixel 3
+);
+
 void main() {
-    color = vec4(renderPixel(vec2(FragCoord.x, FragCoord.y), vec2(u_ScreenResolution.x, u_ScreenResolution.y)), 1.0);
+    color = vec4(0.0);
+    for(int i = 0; i < 4; i++) {
+        color += vec4(renderPixel(SSAA[i] + FragCoord, u_ScreenResolution), 1.0);
+    }
+    color /= 4.0;
 }
