@@ -6,8 +6,16 @@
 
 #include "Renderer.h"
 
-Shader::Shader(const std::string& filepath) : m_FilePath(filepath), m_RendererID(0) {
-  ShaderProgramSource soruce = parseShader(filepath);
+Shader::Shader(const std::string& filepath, StringType type) : m_FilePath(filepath), m_RendererID(0) {
+  ShaderProgramSource soruce;
+  switch (type) {
+    default:
+      soruce = parseShader(filepath);
+      break;
+    case StringType::PROGRAM:
+      soruce = parseShaderStr(filepath);
+      break;
+  }
   m_RendererID = CreateShaders(soruce.VertexSource, soruce.FragmentSource);
 }
 
@@ -31,7 +39,29 @@ ShaderProgramSource Shader::parseShader(const std::string& filepath) {
         type = ShaderType::FRAGMENT;
       }
     } else {
-      ss[(int)type] << line << "\n";
+      if (type != ShaderType::NONE) ss[(int)type] << line << "\n";
+    }
+  }
+  return {ss[0].str(), ss[1].str()};
+}
+
+ShaderProgramSource Shader::parseShaderStr(const std::string& str) {
+  std::stringstream stream(str);
+
+  enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1 };
+
+  std::string line;
+  std::stringstream ss[2];
+  ShaderType type = ShaderType::NONE;
+  while (getline(stream, line)) {
+    if (line.find("#shader") != std::string::npos) {
+      if (line.find("vertex") != std::string::npos) {
+        type = ShaderType::VERTEX;
+      } else if (line.find("fragment") != std::string::npos) {
+        type = ShaderType::FRAGMENT;
+      }
+    } else {
+      if (type != ShaderType::NONE) ss[(int)type] << line << "\n";
     }
   }
   return {ss[0].str(), ss[1].str()};

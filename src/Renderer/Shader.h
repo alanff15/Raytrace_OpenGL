@@ -11,6 +11,8 @@ struct ShaderProgramSource {
   std::string FragmentSource;
 };
 
+enum StringType { FILEPATH, PROGRAM };
+
 class Shader {
 private:
   std::string m_FilePath;
@@ -18,7 +20,7 @@ private:
   std::unordered_map<std::string, int> m_UniformLocationCahe;
 
 public:
-  Shader(const std::string& filepath);
+  Shader(const std::string& filepath, StringType type);
   ~Shader();
 
   void Bind() const;
@@ -35,6 +37,7 @@ public:
 
 private:
   ShaderProgramSource parseShader(const std::string& filepath);
+  ShaderProgramSource parseShaderStr(const std::string& str);
   uint32_t CompileShaders(uint32_t type, const std::string& source);
   int GetUniformLocation(const std::string& name);
 

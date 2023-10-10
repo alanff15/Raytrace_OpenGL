@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include "../../res/app.glsl"
+
 #ifndef M_PI
 #define M_PI ((float)3.14159265358979323846)
 #endif
@@ -41,7 +43,8 @@ void Setup() {
   uint32_t indices[] = {0, 1, 2, 2, 3, 0};
   ib = std::make_unique<IndexBuffer>(indices, 6);
   // shader
-  shader = std::make_unique<Shader>("../../res/app.glsl");
+  // shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
+  shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
   shader->Bind();
 }
 
