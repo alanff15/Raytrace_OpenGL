@@ -12,4 +12,5 @@ void Shutdown();
 
 void mouseButtonEvent(GLFWwindow* window, int button, int action, int mods);
 void cursorPosEvent(GLFWwindow* window, double xpos, double ypos);
+void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 }  // namespace App

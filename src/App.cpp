@@ -105,4 +105,13 @@ void cursorPosEvent(GLFWwindow* window, double xpos, double ypos) {
   ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);  // imgui
 }
 
+void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  switch (key) {
+    case GLFW_KEY_ESCAPE:
+      glfwSetWindowShouldClose(window, 1);
+      break;
+  }
+  ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);  // imgui
+}
+
 }  // namespace App

@@ -2,6 +2,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <windows.h>
+
 #include "Renderer/Renderer.h"
 
 #include <imgui.h>
@@ -10,7 +12,8 @@
 
 #include "App.h"
 
-int main(void) {
+// int main() {
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
   GLFWwindow* window;
 
   /* Initialize the library */
@@ -65,6 +68,7 @@ int main(void) {
 
   glfwSetMouseButtonCallback(window, App::mouseButtonEvent);
   glfwSetCursorPosCallback(window, App::cursorPosEvent);
+  glfwSetKeyCallback(window, App::keyEvent);
 
   while (!glfwWindowShouldClose(window)) {
     GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
