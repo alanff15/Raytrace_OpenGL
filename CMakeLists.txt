@@ -19,7 +19,7 @@ link_libraries(
 )
 
 #################################################
-add_executable(OpenGL_teste WIN32
+add_executable(OpenGL_teste #WIN32
     # opengl
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/stb_image/stb_image.cpp # load image
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Texture.cpp

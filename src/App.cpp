@@ -11,7 +11,7 @@
 
 #include <memory>
 
-#include "../../res/app.glsl"
+// #include "../../res/app.glsl"
 
 #ifndef M_PI
 #define M_PI ((float)3.14159265358979323846)
@@ -43,18 +43,38 @@ void Setup() {
   uint32_t indices[] = {0, 1, 2, 2, 3, 0};
   ib = std::make_unique<IndexBuffer>(indices, 6);
   // shader
-  // shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
-  shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
+  shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
+  // shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
   shader->Bind();
+}
+
+glm::mat3 rotationMatrixX(float angle) {
+  return glm::mat3(1, 0, 0, 0, cos(angle), -sin(angle), 0, sin(angle), cos(angle));
+}
+
+glm::mat3 rotationMatrixY(float angle) {
+  return glm::mat3(cos(angle), 0, sin(angle), 0, 1, 0, -sin(angle), 0, cos(angle));
+}
+
+glm::mat3 rotationMatrixZ(float angle) {
+  return glm::mat3(cos(angle), -sin(angle), 0, sin(angle), cos(angle), 0, 0, 0, 1);
 }
 
 void Render(GLFWwindow* window) {
   int w, h;
   glfwGetWindowSize(window, &w, &h);
+  // rotação da câmera
+  glm::mat3 matRot = rotationMatrixZ(angles.z) * rotationMatrixX(angles.x) * rotationMatrixY(angles.y);
+  // posição e orientação da câmera em pixels antes da rotação (sobre o eixo y apontando para a origem)
+  glm::vec3 camera_pos = matRot * glm::vec3(0.0, -20.0, 0.0);
+  glm::mat3 camera_mat = matRot * glm::mat3(/*vx*/ 1.0, 0.0, 0.0, /*vy*/ 0.0, 0.0, -1.0, /*vz*/ 0.0, 1.0, 0.0);
+
+  // set uniforms
   shader->Bind();
-  shader->SetUniform1f("u_FOV", FOV);
   shader->SetUniform2f("u_ScreenResolution", (float)w, (float)h);
-  shader->SetUniform3f("u_DirectorAngles", angles.x, angles.y, angles.z);
+  shader->SetUniform1f("u_CameraFOV", FOV);
+  shader->SetUniform3f("u_CameraPos", camera_pos.x, camera_pos.y, camera_pos.z);
+  shader->SetUniformMat3f("u_CameraMat", camera_mat);
   renderer.Draw(*vao, *ib, *shader);
 }
 
