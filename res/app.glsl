@@ -3,11 +3,11 @@
 #version 330 core
 
 layout(location = 0) in vec4 position;
-out vec2 FragCoord;
+out vec2 fragCoord;
 
 void main() {
   gl_Position = position;
-  FragCoord = position.xy;
+  fragCoord = position.xy;
 }
 
 #-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - #
@@ -15,8 +15,8 @@ void main() {
 #shader fragment
 #version 330 core
 
-layout(location = 0) out vec4 color;
-in vec2 FragCoord;
+layout(location = 0) out vec4 fragColor;
+in vec2 fragCoord;
 
 uniform vec2 u_ScreenResolution;
 uniform float u_CameraFOV;
@@ -92,10 +92,9 @@ vec2 rayMarch(vec3 ro, vec3 rd) {
   for(int i = 0; i < MAX_STEPS; i++) {
     vec3 p = ro + object.x * rd;
     hit = map(p);
-    object.x += hit.x;
+    object.x += 0.9 * hit.x; //soma atenuada para melhorar precisao
     object.y = hit.y;
-    // if(abs(hit.x) < EPSILON || object.x > MAX_DIST)
-    if(hit.x < EPSILON || object.x > MAX_DIST)
+    if(abs(hit.x) < EPSILON || object.x > MAX_DIST)
       break;
   }
   return object;
@@ -153,19 +152,32 @@ vec3 renderPixel(vec2 pixPos, vec2 imgSize) {
   ro = u_CameraPos;
   rd = u_CameraMat * normalize(vec3(vec2(distx, disty) / imgSize, u_CameraFOV));
 
-  vec2 object = rayMarch(ro, rd);
-
   vec3 rgb = vec3(0.0);
   vec3 background = vec3(0.5, 0.8, 0.9);
-  if(object.x < MAX_DIST) {
-    vec3 p = ro + object.x * rd;
-    vec3 material = getMaterial(p, object.y);
-    rgb = getLight(p, rd, material);
-    // fog
-    rgb = mix(rgb, background, 1.0 - exp(-0.00001 * object.x * object.x));
-  } else {
-    rgb = background - max(0.9 * rd.z, 0.0);
+
+  vec2 object;
+
+  int bounces = 10; //quantidade de reflexos
+  float multi = 1.0;
+  for(int i = 0; i < bounces; i++) {
+    object = rayMarch(ro, rd);
+    if(object.x < MAX_DIST) {
+      vec3 p = ro + object.x * rd;
+      vec3 material = getMaterial(p, object.y);
+      rgb += multi * getLight(p, rd, material);
+      //novo raio
+      vec3 n = getNormal(p);
+      ro = p + n * EPSILON;
+      rd = reflect(rd, n);
+      //atenuar proxima reflexao
+      multi *= 0.20;
+      rgb *= (1 - multi);
+    } else {
+      rgb += multi * (background - max(0.9 * rd.z, 0.0));
+      break;
+    }
   }
+  // rgb = multi * mix(rgb, background, 1.0 - exp(-0.00001 * object.x * object.x)); //fog
   return clamp(rgb, vec3(0.0), vec3(1.0));
 }
 
@@ -177,10 +189,10 @@ vec2(1.0, -3.0) / (4.0 * u_ScreenResolution)        // subpixel 3
 );
 
 void main() {
-  color = vec4(0.0);
+  fragColor = vec4(0.0);
   for(int i = 0; i < 4; i++) {
-    color += vec4(renderPixel(SSAA[i] + FragCoord, u_ScreenResolution), 1.0);
+    fragColor += vec4(renderPixel(SSAA[i] + fragCoord, u_ScreenResolution), 1.0);
   }
-  color /= 4.0;
+  fragColor /= 4.0;
 }
 //)glsl";

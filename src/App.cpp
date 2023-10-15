@@ -66,7 +66,7 @@ void Render(GLFWwindow* window) {
   // rotação da câmera
   glm::mat3 matRot = rotationMatrixZ(angles.z) * rotationMatrixX(angles.x) * rotationMatrixY(angles.y);
   // posição e orientação da câmera em pixels antes da rotação (sobre o eixo y apontando para a origem)
-  glm::vec3 camera_pos = matRot * glm::vec3(0.0, -20.0, 0.0);
+  glm::vec3 camera_pos = matRot * glm::vec3(0.0, -15.0, 0.0) + glm::vec3(0.0, 0.0, 2.0);
   glm::mat3 camera_mat = matRot * glm::mat3(/*vx*/ 1.0, 0.0, 0.0, /*vy*/ 0.0, 0.0, -1.0, /*vz*/ 0.0, 1.0, 0.0);
 
   // set uniforms
