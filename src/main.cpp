@@ -12,7 +12,7 @@
 #include "App.h"
 
 int main() {
-// int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
+  // int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
   GLFWwindow* window;
 
   /* Initialize the library */

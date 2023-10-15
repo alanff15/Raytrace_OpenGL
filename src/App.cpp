@@ -11,7 +11,7 @@
 
 #include <memory>
 
-// #include "../../res/app.glsl"
+#include "../../res/app.glsl"
 
 #ifndef M_PI
 #define M_PI ((float)3.14159265358979323846)
@@ -27,6 +27,8 @@ std::unique_ptr<Shader> shader;
 
 float FOV = 1.0;
 glm::vec3 angles(30.0f * M_PI / 180.0f, 0, 0);
+float metalness = 0.1;
+float roughness = 0.0;
 
 void Setup() {
   // blend
@@ -43,8 +45,8 @@ void Setup() {
   uint32_t indices[] = {0, 1, 2, 2, 3, 0};
   ib = std::make_unique<IndexBuffer>(indices, 6);
   // shader
-  shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
-  // shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
+  // shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
+  shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
   shader->Bind();
 }
 
@@ -73,19 +75,26 @@ void Render(GLFWwindow* window) {
   shader->Bind();
   shader->SetUniform2f("u_ScreenResolution", (float)w, (float)h);
   shader->SetUniform1f("u_CameraFOV", FOV);
+  shader->SetUniform1f("u_Metalness", metalness);
+  shader->SetUniform1f("u_Roughness", roughness);
   shader->SetUniform3f("u_CameraPos", camera_pos.x, camera_pos.y, camera_pos.z);
   shader->SetUniformMat3f("u_CameraMat", camera_mat);
   renderer.Draw(*vao, *ib, *shader);
 }
 
 void RenderInterface() {
+  // ImGui::GetIO()->NativePtr->IniFilename = "my_config.ini";
+  ImGui::GetIO().IniFilename = NULL;
   ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x - 60, ImGui::GetWindowPos().y - 60), ImGuiCond_::ImGuiCond_None);
   ImGui::SetNextWindowSize(ImVec2(420, 100), ImGuiCond_::ImGuiCond_None);
   ImGui::SetNextWindowBgAlpha(0.25f);
   ImGui::Begin("Câmera");
-  ImGui::SliderFloat("FOV", &FOV, 0.5f, 2.0f);
-  ImGui::SliderFloat("Ângulo X", &angles.x, -M_PI / 2, M_PI / 2);
-  ImGui::SliderFloat("Ângulo Z", &angles.z, -M_PI, M_PI);
+  ImGui::Text("FPS: %3.1f", (ImGui::GetIO()).Framerate);
+  // ImGui::SliderFloat("FOV", &FOV, 0.5f, 2.0f);
+  // ImGui::SliderFloat("Ângulo X", &angles.x, -M_PI / 2, M_PI / 2);
+  // ImGui::SliderFloat("Ângulo Z", &angles.z, -M_PI, M_PI);
+  ImGui::SliderFloat("Metalness", &metalness, 0, 1);
+  ImGui::SliderFloat("Roughness", &roughness, 0, 1);
   ImGui::End();
 }
 
