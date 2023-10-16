@@ -5,12 +5,11 @@
 #include <GLFW/glfw3.h>
 
 namespace App {
-void Setup();
+void Setup(GLFWwindow* window);
 void Render(GLFWwindow* window);
-void RenderInterface();
-void Shutdown();
+void RenderInterface(GLFWwindow* window);
+void Shutdown(GLFWwindow* window);
 
-void mouseButtonEvent(GLFWwindow* window, int button, int action, int mods);
 void cursorPosEvent(GLFWwindow* window, double xpos, double ypos);
 void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
 }  // namespace App

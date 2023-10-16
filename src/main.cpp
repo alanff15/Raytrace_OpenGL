@@ -63,9 +63,8 @@ int main() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 130");
 
-  App::Setup();
+  App::Setup(window);
 
-  glfwSetMouseButtonCallback(window, App::mouseButtonEvent);
   glfwSetCursorPosCallback(window, App::cursorPosEvent);
   glfwSetKeyCallback(window, App::keyEvent);
 
@@ -80,7 +79,7 @@ int main() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    App::RenderInterface();
+    App::RenderInterface(window);
 
     // Render Dear ImGui frame
     ImGui::Render();
@@ -96,7 +95,7 @@ int main() {
     glfwPollEvents();
   }
 
-  App::Shutdown();
+  App::Shutdown(window);
 
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();
