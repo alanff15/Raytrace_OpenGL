@@ -104,6 +104,7 @@ const std::string GLSL_STR = R"glsl(#shader vertex
       object.y = hit.y;
       if (abs(hit.x) < EPSILON || object.x > MAX_DIST) break;
     }
+    if (object.x<0) object.x = 0;
     return object;
   }
 
