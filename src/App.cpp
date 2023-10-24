@@ -20,6 +20,7 @@
 namespace App {
 
 Renderer renderer;
+
 std::unique_ptr<VertexBuffer> vb;
 std::unique_ptr<VertexArray> vao;
 std::unique_ptr<IndexBuffer> ib;
@@ -126,7 +127,7 @@ void Shutdown(GLFWwindow* window) {
   shader.release();
 }
 
-void cursorPosEvent(GLFWwindow* window, double xpos, double ypos) {
+void CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
   if (mouseViewEnabled) {
     glm::dvec2 mousePos;
     glfwGetCursorPos(window, &mousePos.x, &mousePos.y);
@@ -137,7 +138,11 @@ void cursorPosEvent(GLFWwindow* window, double xpos, double ypos) {
   ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);  // imgui
 }
 
-void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+  ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);  // imgui
+}
+
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_RELEASE) {
     switch (key) {
       case GLFW_KEY_ESCAPE:
@@ -169,6 +174,10 @@ void keyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
     }
   }
   ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);  // imgui
+}
+
+void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
+  glViewport(0, 0, width, height);
 }
 
 }  // namespace App

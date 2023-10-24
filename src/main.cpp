@@ -65,8 +65,11 @@ int main() {
 
   App::Setup(window);
 
-  glfwSetCursorPosCallback(window, App::cursorPosEvent);
-  glfwSetKeyCallback(window, App::keyEvent);
+  // app callbacks
+  glfwSetCursorPosCallback(window, App::CursorPosCallback);
+  glfwSetMouseButtonCallback(window, App::MouseButtonCallback);
+  glfwSetKeyCallback(window, App::KeyCallback);
+  glfwSetFramebufferSizeCallback(window, App::FramebufferSizeCallback);
 
   while (!glfwWindowShouldClose(window)) {
     GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
