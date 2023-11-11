@@ -1,4 +1,4 @@
-const std::string GLSL_STR = R"glsl(#shader vertex
+const std::string GLSL_STR = R"glsl(//#shader vertex
 #version 330 core
 
   layout(location = 0) in vec4 position; out vec2 fragCoord;
@@ -8,9 +8,9 @@ const std::string GLSL_STR = R"glsl(#shader vertex
     fragCoord = position.xy;
   }
 
-#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - #
+//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --//
 
-#shader fragment
+//#shader fragment
 #version 330 core
 
   layout(location = 0) out vec4 fragColor;
