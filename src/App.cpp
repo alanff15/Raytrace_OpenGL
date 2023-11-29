@@ -11,7 +11,7 @@
 
 #include <memory>
 
-#include "../../res/app.glsl"
+// #include "../../res/app.glsl"
 
 #ifndef M_PI
 #define M_PI ((float)3.14159265358979323846)
@@ -34,12 +34,16 @@ glm::vec3 angles(0, 0, 0);
 glm::mat3 matRot;
 glm::vec3 camera_pos(0.0, -15.0, 2.0);
 glm::mat3 camera_mat;
-float metalness = 0.1f;
-float roughness = 0.0f;
+float metalness = 0.05f;
+float roughness = 0.20f;
 bool W_PRESSED = false;
 bool S_PRESSED = false;
 bool D_PRESSED = false;
 bool A_PRESSED = false;
+bool Q_PRESSED = false;
+bool E_PRESSED = false;
+bool ALT_PRESSED = false;
+bool SHIFT_PRESSED = false;
 float walk_step = 10;
 bool mouseViewEnabled;
 
@@ -58,8 +62,8 @@ void Setup(GLFWwindow* window) {
   uint32_t indices[] = {0, 1, 2, 2, 3, 0};
   ib = std::make_unique<IndexBuffer>(indices, 6);
   // shader
-  // shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
-  shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
+  shader = std::make_unique<Shader>("../../res/app.glsl", StringType::FILEPATH);
+  // shader = std::make_unique<Shader>(GLSL_STR, StringType::PROGRAM);
   shader->Bind();
   // configurar mouse
   mouseViewEnabled = true;
@@ -89,8 +93,17 @@ void Render(GLFWwindow* window) {
   glm::vec3 move(0);
   if (W_PRESSED) move += camera_mat[2];  // W
   if (S_PRESSED) move -= camera_mat[2];  // S
+  if (Q_PRESSED) move += camera_mat[1];  // Q
+  if (E_PRESSED) move -= camera_mat[1];  // E
   if (D_PRESSED) move += camera_mat[0];  // D
   if (A_PRESSED) move -= camera_mat[0];  // A
+  if (ALT_PRESSED) {
+    walk_step = 3;
+  } else if (SHIFT_PRESSED) {
+    walk_step = 30;
+  } else {
+    walk_step = 10;
+  }
   if (glm::length(move) > 0.5) camera_pos += glm::normalize(move) * walk_step / ImGui::GetIO().Framerate;
 
   // set uniforms
@@ -111,7 +124,7 @@ void RenderInterface(GLFWwindow* window) {
   ImGui::SetNextWindowSize(ImVec2(420, 100), ImGuiCond_::ImGuiCond_None);
   ImGui::SetNextWindowBgAlpha(0.25f);
   ImGui::Begin("Câmera");
-  ImGui::Text("W-S-A-D: navegar\tM: sair da navegação\tFPS: %3.1f", (ImGui::GetIO()).Framerate);
+  ImGui::Text("W-S-A-D-Q-E: navegar\tM: mouse\tFPS: %3.1f", (ImGui::GetIO()).Framerate);
   // ImGui::SliderFloat("FOV", &FOV, 0.5f, 2.0f);
   // ImGui::SliderFloat("Ângulo X", &angles.x, -M_PI / 2, M_PI / 2);
   // ImGui::SliderFloat("Ângulo Z", &angles.z, -M_PI, M_PI);
@@ -144,6 +157,10 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
   if (action == GLFW_PRESS || action == GLFW_RELEASE) {
+    // mods
+    ALT_PRESSED = ((mods & GLFW_MOD_ALT) != 0);
+    SHIFT_PRESSED = ((mods & GLFW_MOD_SHIFT) != 0);
+    // key
     switch (key) {
       case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(window, 1);
@@ -159,6 +176,12 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         break;
       case GLFW_KEY_A:
         A_PRESSED = (action == GLFW_PRESS);
+        break;
+      case GLFW_KEY_Q:
+        Q_PRESSED = (action == GLFW_PRESS);
+        break;
+      case GLFW_KEY_E:
+        E_PRESSED = (action == GLFW_PRESS);
         break;
       case GLFW_KEY_M:
         if (action == GLFW_PRESS) {

@@ -54,8 +54,12 @@ void initImGui(GLFWwindow*& window) {
   // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
   ImGuiStyle& style = ImGui::GetStyle();
   if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-    style.WindowRounding = 0.5f;
-    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    style.WindowRounding = 10;
+
+    style.Colors[ImGuiCol_WindowBg].x = 0.1f;
+    style.Colors[ImGuiCol_WindowBg].y = 0.2f;
+    style.Colors[ImGuiCol_WindowBg].z = 0.4f;
+    style.Colors[ImGuiCol_WindowBg].w = 0.8f;
   }
 
   // Setup Platform/Renderer backends
